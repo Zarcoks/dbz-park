@@ -30,14 +30,36 @@ python manage.py runserver
   (`normal`, `sayan`, `super_sayan`) est fixé à l'achat et suit le billet.
   Un numéro inconnu ou déjà pris est refusé, sans dire par qui.
 - **Attractions** (`/attractions/`) : les attractions du parc, avec leur photo (une
-  illustration par défaut si elle manque) et leur capacité maximale.
-- **État d'une attraction** (`AttractionState`) : le direct d'une attraction —
-  capacité réelle, durée minimale et maximale d'un tour, et l'heure du dernier
-  relevé. Un seul état par attraction, réécrit au fil de l'eau plutôt qu'empilé.
-  La capacité maximale reste sur l'attraction et n'est pas recopiée dans l'état.
-  Rien de tout cela n'apparaît encore aux visiteurs : le modèle n'est visible que
-  dans `/admin/`.
-- Les comptes admin (`is_staff`/`is_superuser`, via `python manage.py createsuperuser`) ont accès à `/admin/` mais n'ont pas de fonctionnalité dédiée pour l'instant.
+  illustration par défaut si elle manque), leur capacité maximale, la durée d'un tour
+  (`min_duration`, `max_duration`) et le monde qu'elles portent en ce moment. Ce
+  dernier chiffre n'est pas stocké : il se compte sur les présences.
+- **File d'attente virtuelle** (`QueueEntry`) : une place tenue par un billet sur une
+  attraction. On garde la date d'inscription (`joined_at`, qui donne aussi le rang
+  dans la file), l'état prêt (`is_ready`) et l'heure à laquelle il est passé prêt
+  (`ready_at`). L'attraction porte la tolérance de cet état prêt, en secondes
+  (`max_ready_waiting`) : au-delà, le billet a laissé passer son tour et sa place est
+  à donner à un autre (`ready_expired()`, `Attraction.expired_ready_entries()`).
+  La table ne tient que la file du moment : une place disparaît quand son porteur
+  entre ou se désiste, d'où un billet au plus par attraction.
+  Depuis la page des attractions, le visiteur rejoint une file (`join_queue`), la
+  quitte quand il veut (`leave_queue`), et valide sa place une fois appelé
+  (`validate_queue_entry`) : la place est alors supprimée et une présence prend le
+  relais, dans la même transaction. Le billet joué n'est pas demandé : on prend le
+  meilleur rôle parmi ceux qui restent (super saiyan, puis saiyan, puis normal —
+  `Billet.objects.best_role_first()`).
+- **Présences** (`AttractionVisit`) : qui se trouve dans l'attraction et depuis quand
+  (`entered_at`). Là aussi, rien que le présent : la ligne est écrite à l'entrée et
+  effacée à la sortie, donc la table est la liste de ceux qui sont à l'intérieur.
+  Rien n'appelle encore les billets (`is_ready` se pose depuis `/admin/` ou le shell) :
+  c'est le travail de l'attraction, pas de l'interface visiteur.
+- **Console** (`/console/`) : réservée aux comptes admin (`is_staff`). Elle liste, par
+  attraction, les visiteurs appelés — qui, quel billet, quel rôle, depuis combien de
+  temps, et si le délai de tolérance est dépassé — avec deux décisions : **Accepter**
+  (le visiteur entre, sa place quitte la file) ou **Refuser** (la place est retirée).
+  Un visiteur connecté qui tente d'y accéder reçoit un 403.
+  Rien n'appelle encore les billets (`is_ready`) : cela se pose depuis `/admin/` ou le
+  shell, en attendant que l'attraction le fasse elle-même.
+- Les comptes admin ont aussi accès à `/admin/` (`python manage.py createsuperuser`).
 
 Pour se donner de quoi essayer, `/admin/` permet de créer des billets libres (numéro
 + rôle, sans visiteur) et des attractions, comme le ferait la billetterie.

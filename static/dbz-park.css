@@ -101,6 +101,12 @@ body {
   gap: 10px;
 }
 
+/* Sous cette largeur, la signature passe après les onglets : c'est la
+   navigation qui doit tenir, pas la phrase. */
+@media (max-width: 1100px) {
+  .brand-tagline { display: none; }
+}
+
 .nav-link-btn {
   display: inline-flex;
   align-items: center;
@@ -249,6 +255,23 @@ main {
   color: #fff;
 }
 
+/* Le second choix d'un panneau : quitter la file, refuser un visiteur. Présent
+   sans prendre le pas sur l'action principale, qui reste pleine. */
+.btn-park-ghost {
+  background-color: transparent;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-pill);
+  color: var(--gray-500);
+  font-weight: 500;
+  padding: 8px 20px;
+  transition: border-color .15s ease, color .15s ease;
+}
+
+.btn-park-ghost:hover, .btn-park-ghost:focus {
+  border-color: var(--park-orange);
+  color: var(--park-orange);
+}
+
 /* ── Tickets ──────────────────────────────────────────────── */
 .ticket-card {
   display: flex;
@@ -334,6 +357,12 @@ main {
   margin: 0 0 10px;
 }
 
+.attraction-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .capacity-badge {
   display: inline-flex;
   align-items: center;
@@ -345,6 +374,98 @@ main {
   background-color: var(--park-sky);
   color: var(--park-deep);
 }
+
+/* ── File d'attente ───────────────────────────────────────── */
+/* Le panneau du bas de carte : la file du visiteur, ou de quoi la rejoindre. */
+.queue-panel {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--gray-300);
+  background-color: var(--gray-50);
+}
+
+.queue-line {
+  margin: 0 0 8px;
+  font-size: .84rem;
+  line-height: 1.4;
+}
+
+.queue-panel form + .queue-line,
+.queue-panel .queue-line:last-child { margin-bottom: 0; }
+
+/* Chaque cas a sa couleur : appelé, en attente, passé, à l'intérieur. */
+.queue-ready {
+  border-left-color: var(--park-orange);
+  background-color: #FFF7ED;
+}
+
+.queue-waiting { border-left-color: var(--role-normal); }
+
+.queue-expired {
+  border-left-color: var(--gray-400);
+  color: var(--gray-500);
+}
+
+.queue-inside {
+  border-left-color: #15803D;
+  background-color: #F0FDF4;
+}
+
+.queue-join { margin-top: 14px; }
+
+.queue-note {
+  margin: 14px 0 0;
+  font-size: .8rem;
+  color: var(--gray-400);
+}
+
+/* ── Console admin ────────────────────────────────────────── */
+.console-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-weight: 400;
+}
+
+.console-table {
+  font-size: .88rem;
+}
+
+/* Les colonnes restent sur une ligne ; c'est le tableau qui défile, dans son
+   conteneur, plutôt que les mots qui se coupent. */
+.console-table th, .console-table td { white-space: nowrap; }
+
+.console-table th {
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* Une place dont le délai est passé se lit tout de suite : l'admin décide en
+   sachant que le visiteur s'est fait attendre. */
+.console-expired td { background-color: var(--gray-50); }
+
+.expired-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  font-size: .74rem;
+  color: var(--role-sayan);
+  white-space: nowrap;
+}
+
+/* Les deux décisions côte à côte, chacune dans son formulaire. */
+.console-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.console-actions form { margin: 0; }
 
 /* ── Empty state ──────────────────────────────────────────── */
 .empty-state {

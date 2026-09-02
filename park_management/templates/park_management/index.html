@@ -34,6 +34,12 @@
               <i class="bi bi-rocket-takeoff"></i>
               Attractions
             </a>
+            {% if user.is_staff %}
+              <a href="{% url 'console' %}" class="nav-link-btn {% if request.resolver_match.url_name == 'console' %}active{% endif %}">
+                <i class="bi bi-sliders"></i>
+                Console
+              </a>
+            {% endif %}
             <div class="dropdown">
               <button class="nav-link-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle"></i>
@@ -54,6 +60,12 @@
                   </a>
                 </li>
                 {% if user.is_staff %}
+                  <li>
+                    <a class="dropdown-item" href="{% url 'console' %}">
+                      <i class="bi bi-sliders"></i>
+                      Console
+                    </a>
+                  </li>
                   <li>
                     <a class="dropdown-item" href="/admin/">
                       <i class="bi bi-shield-lock"></i>
@@ -83,6 +95,13 @@
       </div>
     </header>
     <main>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} py-2 small">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
       {% block content %}{% endblock %}
     </main>
   {% block scripts %}{% endblock %}

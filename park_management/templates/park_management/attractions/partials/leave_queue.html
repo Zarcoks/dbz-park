@@ -1,0 +1,8 @@
+{# Le bouton de sortie de file, le même dans les trois états d'une place. #}
+<form method="post" action="{% url 'leave_queue' entry.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-park-ghost btn-sm w-100 mt-2">
+    <i class="bi bi-box-arrow-left"></i>
+    Quitter la file
+  </button>
+</form>

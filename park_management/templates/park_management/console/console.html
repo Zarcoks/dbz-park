@@ -1,0 +1,81 @@
+{% extends "park_management/index.html" %}
+{% block title %}Console — Dragon Ball Park{% endblock %}
+{% block content %}
+  <h1 class="page-title h4">Console</h1>
+  <p class="page-subtitle">Les visiteurs appelés, attraction par attraction : à vous de les faire entrer ou de leur rendre leur place.</p>
+
+  {% for row in attractions %}
+    <div class="park-card">
+      <h2>
+        <i class="bi bi-rocket-takeoff"></i>
+        {{ row.attraction.name }}
+        <span class="console-facts ms-auto">
+          <span class="capacity-badge"><i class="bi bi-people-fill"></i> {{ row.inside }}/{{ row.attraction.max_people }}</span>
+          <span class="capacity-badge"><i class="bi bi-hourglass-split"></i> {{ row.waiting }} en attente</span>
+          <span class="capacity-badge"><i class="bi bi-stopwatch"></i> tolérance {{ row.attraction.max_ready_waiting }} s</span>
+        </span>
+      </h2>
+
+      {% if row.ready %}
+        <div class="table-responsive">
+          <table class="table align-middle console-table mb-0">
+            <thead>
+              <tr>
+                <th>Visiteur</th>
+                <th>Billet</th>
+                <th>Rôle</th>
+                <th>Appelé à</th>
+                <th>Depuis</th>
+                <th class="text-end">Décision</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in row.ready %}
+                <tr{% if entry.ready_expired %} class="console-expired"{% endif %}>
+                  <td>{{ entry.billet.user.username }}</td>
+                  <td><strong>#{{ entry.billet.numero }}</strong></td>
+                  <td><span class="role-badge role-badge-{{ entry.billet.role }}">{{ entry.billet.get_role_display }}</span></td>
+                  <td>{{ entry.ready_at|time:"H:i" }}</td>
+                  <td>
+                    {{ entry.ready_at|timesince }}
+                    {% if entry.ready_expired %}
+                      <span class="expired-tag"><i class="bi bi-hourglass-bottom"></i> délai dépassé</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-end console-actions">
+                    <form method="post" action="{% url 'accept_queue_entry' entry.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-park btn-sm">
+                        <i class="bi bi-check2-circle"></i>
+                        Accepter
+                      </button>
+                    </form>
+                    <form method="post" action="{% url 'refuse_queue_entry' entry.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-park-ghost btn-sm">
+                        <i class="bi bi-x-circle"></i>
+                        Refuser
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-bell-slash"></i>
+          Personne d'appelé sur cette attraction.
+        </div>
+      {% endif %}
+    </div>
+  {% empty %}
+    <div class="park-card">
+      <div class="empty-state">
+        <i class="bi bi-rocket-takeoff"></i>
+        Aucune attraction pour l'instant.
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

@@ -2,19 +2,87 @@
 {% block title %}Attractions — Dragon Ball Park{% endblock %}
 {% block content %}
   <h1 class="page-title h4">Attractions</h1>
-  <p class="page-subtitle">Les attractions du parc, et le nombre de visiteurs qu'elles prennent à la fois.</p>
+  <p class="page-subtitle">Rejoignez la file virtuelle, et présentez-vous quand vous êtes appelé.</p>
 
   <div class="row g-4">
-    {% for attraction in attractions %}
+    {% for card in cards %}
       <div class="col-sm-6 col-lg-4">
         <div class="attraction-card">
-          <img class="attraction-photo" src="{{ attraction.get_photo_url }}" alt="{{ attraction.name }}">
+          <img class="attraction-photo" src="{{ card.attraction.get_photo_url }}" alt="{{ card.attraction.name }}">
           <div class="attraction-body">
-            <h2 class="attraction-name">{{ attraction.name }}</h2>
-            <span class="capacity-badge">
-              <i class="bi bi-people-fill"></i>
-              {{ attraction.max_people }} personne{{ attraction.max_people|pluralize }} max.
-            </span>
+            <h2 class="attraction-name">{{ card.attraction.name }}</h2>
+            <div class="attraction-facts">
+              <span class="capacity-badge">
+                <i class="bi bi-people-fill"></i>
+                {{ card.attraction.people_inside }}/{{ card.attraction.max_people }}
+              </span>
+              <span class="capacity-badge">
+                <i class="bi bi-stopwatch"></i>
+                {{ card.attraction.duration_range }}
+              </span>
+            </div>
+
+            {% if card.visit %}
+              <div class="queue-panel queue-inside">
+                <p class="queue-line">
+                  <i class="bi bi-person-check-fill"></i>
+                  Vous êtes à l'intérieur avec le billet <strong>#{{ card.visit.billet.numero }}</strong>,
+                  depuis {{ card.visit.entered_at|time:"H:i" }}.
+                </p>
+              </div>
+            {% elif card.entry %}
+              {% if card.entry.is_ready and not card.entry.ready_expired %}
+                <div class="queue-panel queue-ready">
+                  <p class="queue-line">
+                    <i class="bi bi-bell-fill"></i>
+                    C'est à vous — billet <strong>#{{ card.entry.billet.numero }}</strong>,
+                    appelé à {{ card.entry.ready_at|time:"H:i" }}.
+                  </p>
+                  <form method="post" action="{% url 'validate_queue_entry' card.entry.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-park btn-sm w-100">
+                      <i class="bi bi-check2-circle"></i>
+                      Valider ma place
+                    </button>
+                  </form>
+                  {% include "park_management/attractions/partials/leave_queue.html" with entry=card.entry %}
+                </div>
+              {% elif card.entry.is_ready %}
+                <div class="queue-panel queue-expired">
+                  <p class="queue-line">
+                    <i class="bi bi-hourglass-bottom"></i>
+                    Votre tour est passé : la place du billet
+                    <strong>#{{ card.entry.billet.numero }}</strong> revient à la file.
+                  </p>
+                  {% include "park_management/attractions/partials/leave_queue.html" with entry=card.entry %}
+                </div>
+              {% else %}
+                <div class="queue-panel queue-waiting">
+                  <p class="queue-line">
+                    <i class="bi bi-hourglass-split"></i>
+                    Billet <strong>#{{ card.entry.billet.numero }}</strong> dans la file
+                    depuis {{ card.entry.joined_at|time:"H:i" }} — {{ card.rank }}<sup>e</sup> position.
+                  </p>
+                  {% include "park_management/attractions/partials/leave_queue.html" with entry=card.entry %}
+                </div>
+              {% endif %}
+            {% elif card.billet %}
+              <form method="post" action="{% url 'join_queue' card.attraction.id %}" class="queue-join">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-park btn-sm w-100">
+                  <i class="bi bi-hourglass-split"></i>
+                  Rejoindre la file
+                </button>
+                <p class="queue-note">
+                  Avec le billet #{{ card.billet.numero }} ({{ card.billet.get_role_display }}).
+                </p>
+              </form>
+            {% else %}
+              <p class="queue-note">
+                <i class="bi bi-info-circle"></i>
+                Aucun billet disponible pour cette file.
+              </p>
+            {% endif %}
           </div>
         </div>
       </div>
