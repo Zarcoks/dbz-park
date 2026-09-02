@@ -1,0 +1,28 @@
+{% extends "park_management/index.html" %}
+{% block title %}Créer un compte — Dragon Ball Park{% endblock %}
+{% block content %}
+  <div class="auth-column">
+    <div class="park-card">
+      <h2><i class="bi bi-person-plus"></i> Créer un compte</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="helptext">{{ field.help_text|safe }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="text-danger small mt-1">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-park w-100">Créer mon compte</button>
+      </form>
+      <p class="text-center small mt-3 mb-0">
+        Déjà inscrit ? <a href="{% url 'login' %}">Se connecter</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

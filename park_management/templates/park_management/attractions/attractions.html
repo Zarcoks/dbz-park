@@ -1,0 +1,32 @@
+{% extends "park_management/index.html" %}
+{% block title %}Attractions — Dragon Ball Park{% endblock %}
+{% block content %}
+  <h1 class="page-title h4">Attractions</h1>
+  <p class="page-subtitle">Les attractions du parc, et le nombre de visiteurs qu'elles prennent à la fois.</p>
+
+  <div class="row g-4">
+    {% for attraction in attractions %}
+      <div class="col-sm-6 col-lg-4">
+        <div class="attraction-card">
+          <img class="attraction-photo" src="{{ attraction.get_photo_url }}" alt="{{ attraction.name }}">
+          <div class="attraction-body">
+            <h2 class="attraction-name">{{ attraction.name }}</h2>
+            <span class="capacity-badge">
+              <i class="bi bi-people-fill"></i>
+              {{ attraction.max_people }} personne{{ attraction.max_people|pluralize }} max.
+            </span>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="park-card">
+          <div class="empty-state">
+            <i class="bi bi-rocket-takeoff"></i>
+            Aucune attraction pour l'instant.
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dbz-park",
+      "runtimeExecutable": "/Users/jost/code/dbz_park/.venv/bin/python",
+      "runtimeArgs": ["manage.py", "runserver", "8420"],
+      "port": 8420
+    }
+  ]
+}

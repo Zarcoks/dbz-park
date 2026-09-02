@@ -1,0 +1,361 @@
+/* ============================================================
+   Dragon Ball Park – Custom Design System
+   ============================================================ */
+
+/* ── Brand Tokens ─────────────────────────────────────────── */
+:root {
+  --park-night:   #101A3D;
+  --park-deep:    #17245C;
+  --park-orange:  #F97316;
+  --park-gold:    #F7C948;
+  --park-sky:     #E8EEFB;
+
+  --gray-50:  #FAFAFA;
+  --gray-100: #F4F4F5;
+  --gray-200: #E4E4E7;
+  --gray-300: #D4D4D8;
+  --gray-400: #A1A1AA;
+  --gray-500: #71717A;
+  --gray-600: #52525B;
+
+  /* The colours of the three roles, shared by the badges and the ticket cards.
+     Each one keeps its contrast on white, so a role reads without its label. */
+  --role-normal:      #0369A1;
+  --role-sayan:       #C2410C;
+  --role-super-sayan: #A16207;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(16,26,61,.06), 0 1px 2px rgba(16,26,61,.04);
+  --shadow-md: 0 4px 12px rgba(16,26,61,.08), 0 2px 6px rgba(16,26,61,.05);
+  --shadow-lg: 0 8px 24px rgba(16,26,61,.10), 0 4px 10px rgba(16,26,61,.06);
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scrollbar-gutter: stable; }
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--park-sky);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(249,115,22,.16), transparent 42%),
+    radial-gradient(circle at 88% 8%, rgba(247,201,72,.20), transparent 38%);
+  color: var(--gray-600);
+  min-height: 100vh;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.park-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background-color: var(--park-night);
+  padding: 14px 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.park-header .header-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brand-link img {
+  width: 40px;
+  height: 40px;
+}
+
+.brand-name {
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.brand-tagline {
+  color: rgba(255, 255, 255, .65);
+  font-size: .78rem;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, .06);
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.nav-link-btn:hover,
+.nav-link-btn:focus {
+  background-color: var(--park-orange);
+  border-color: var(--park-orange);
+  color: #fff;
+}
+
+/* L'onglet de la page ouverte, marqué sans attendre le survol. */
+.nav-link-btn.active {
+  background-color: var(--park-orange);
+  border-color: var(--park-orange);
+}
+
+.park-dropdown {
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  margin-top: 8px;
+}
+
+.park-dropdown .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: .9rem;
+  color: var(--gray-600);
+}
+
+.park-dropdown .dropdown-item:hover {
+  background-color: var(--park-sky);
+  color: var(--park-night);
+}
+
+/* A form in the menu must not push the item out of line. */
+.park-dropdown form { margin: 0; }
+.park-dropdown form .dropdown-item { width: 100%; border: none; background: none; text-align: left; }
+
+/* ── Layout ───────────────────────────────────────────────── */
+main {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.page-title {
+  color: var(--park-night);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  color: var(--gray-500);
+  font-size: .92rem;
+  margin-bottom: 24px;
+}
+
+/* The narrow column the login and signup forms are shown in. */
+.auth-column {
+  max-width: 460px;
+  margin: 24px auto;
+}
+
+/* ── Cards ────────────────────────────────────────────────── */
+.park-card {
+  background-color: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.park-card h2 {
+  color: var(--park-night);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.park-card h2 i { color: var(--park-orange); }
+
+/* ── Forms ────────────────────────────────────────────────── */
+.form-label {
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+
+.form-control, .form-select {
+  border-radius: var(--radius-sm);
+  border-color: var(--gray-300);
+  font-size: .92rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--park-orange);
+  box-shadow: 0 0 0 .2rem rgba(249, 115, 22, .15);
+}
+
+/* Django writes its field help as a list; it reads better small and grey. */
+.helptext, .form-text {
+  display: block;
+  font-size: .78rem;
+  color: var(--gray-400);
+}
+
+.helptext ul {
+  padding-left: 18px;
+  margin-bottom: 0;
+}
+
+.btn-park {
+  background-color: var(--park-orange);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: #fff;
+  font-weight: 500;
+  padding: 9px 22px;
+  transition: background-color .15s ease;
+}
+
+.btn-park:hover, .btn-park:focus {
+  background-color: #EA580C;
+  color: #fff;
+}
+
+/* ── Tickets ──────────────────────────────────────────────── */
+.ticket-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: #fff;
+  border: 1px solid var(--gray-200);
+  border-left: 5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.ticket-normal      { border-left-color: var(--role-normal); }
+.ticket-sayan       { border-left-color: var(--role-sayan); }
+.ticket-super_sayan { border-left-color: var(--role-super-sayan); }
+
+.ticket-numero {
+  font-weight: 600;
+  color: var(--park-night);
+  font-size: 1.02rem;
+  letter-spacing: .02em;
+}
+
+.ticket-date {
+  display: block;
+  font-size: .78rem;
+  color: var(--gray-400);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  padding: 5px 14px;
+  font-size: .8rem;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.role-badge-normal      { background-color: var(--role-normal); }
+.role-badge-sayan       { background-color: var(--role-sayan); }
+.role-badge-super_sayan { background-color: var(--role-super-sayan); }
+
+/* ── Attractions ──────────────────────────────────────────── */
+.attraction-card {
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+
+.attraction-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Une hauteur fixe, quelle que soit la photo : les cartes d'une rangée doivent
+   s'aligner, et l'illustration par défaut a ses propres proportions. */
+.attraction-photo {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  background-color: var(--park-sky);
+  display: block;
+}
+
+.attraction-body {
+  padding: 16px 20px 20px;
+}
+
+.attraction-name {
+  color: var(--park-night);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.capacity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  padding: 5px 14px;
+  font-size: .8rem;
+  font-weight: 500;
+  background-color: var(--park-sky);
+  color: var(--park-deep);
+}
+
+/* ── Empty state ──────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--gray-400);
+}
+
+.empty-state i {
+  font-size: 2.2rem;
+  color: var(--gray-300);
+  display: block;
+  margin-bottom: 8px;
+}

@@ -1,0 +1,5 @@
+# Django
+Django==4.2.27
+
+# Images (ImageField)
+Pillow==11.3.0

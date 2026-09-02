@@ -1,0 +1,62 @@
+{% extends "park_management/index.html" %}
+{% block title %}Mes billets — Dragon Ball Park{% endblock %}
+{% block content %}
+  <h1 class="page-title h4">Mes billets</h1>
+  <p class="page-subtitle">Saisissez le numéro reçu par mail pour rattacher le billet à votre compte.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="park-card">
+        <h2><i class="bi bi-envelope-paper"></i> Assigner un billet</h2>
+        <form method="post" action="{% url 'assign_ticket' %}" novalidate>
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}
+                <div class="text-danger small mt-1">{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-park">
+            <i class="bi bi-ticket-perforated"></i>
+            Assigner
+          </button>
+        </form>
+        <p class="form-text mt-3 mb-0">
+          Le rôle du billet est fixé à l'achat : il vous suit tel quel une fois le billet assigné.
+        </p>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="park-card">
+        <h2>
+          <i class="bi bi-collection"></i>
+          Mes billets
+          <span class="badge rounded-pill text-bg-light ms-auto">{{ billets|length }}</span>
+        </h2>
+        {% for billet in billets %}
+          <div class="ticket-card ticket-{{ billet.role }}">
+            <div>
+              <span class="ticket-numero">#{{ billet.numero }}</span>
+              <span class="ticket-date">
+                {% if billet.assigned_at %}Assigné le {{ billet.assigned_at|date:"d/m/Y à H:i" }}{% endif %}
+              </span>
+            </div>
+            <span class="role-badge role-badge-{{ billet.role }}">
+              <i class="bi bi-stars"></i>
+              {{ billet.get_role_display }}
+            </span>
+          </div>
+        {% empty %}
+          <div class="empty-state">
+            <i class="bi bi-ticket-detailed"></i>
+            Aucun billet pour l'instant.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
