@@ -466,6 +466,13 @@ main {
    sachant que le visiteur s'est fait attendre. */
 .console-expired td { background-color: var(--gray-50); }
 
+/* Le délai toléré est propre à chaque place : il se lit sur sa ligne. */
+.console-tolerance {
+  display: block;
+  font-size: .72rem;
+  color: var(--gray-400);
+}
+
 .expired-tag {
   display: inline-flex;
   align-items: center;

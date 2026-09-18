@@ -83,6 +83,9 @@ export default function ConsolePage() {
                       <td>{formatTime(entry.ready_at)}</td>
                       <td>
                         {timeSince(entry.ready_at)}
+                        <span className="console-tolerance">
+                          tolérance {entry.max_seconds_allowing_ready} s
+                        </span>
                         {entry.ready_expired && (
                           <span className="expired-tag">
                             <i className="bi bi-hourglass-bottom" />

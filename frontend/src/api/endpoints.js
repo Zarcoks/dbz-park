@@ -2,29 +2,32 @@
  * LA liste des adresses de l'API. Un seul fichier à corriger le jour où le back
  * nomme ses routes autrement : rien d'autre dans le front ne connaît une URL.
  *
- * Chaque entrée reprend une vue Django existante — la colonne de droite dit
- * laquelle, pour que la correspondance reste lisible des deux côtés.
+ * Les noms reprennent mot pour mot ceux du contrat (`API.md`), y compris en
+ * anglais : une URL qui se lit pareil des deux côtés est une URL qu'on ne se
+ * trompe pas à écrire.
  */
 
 export const endpoints = {
-  // ── Comptes ────────────────────────────────  park_management/pages/accounts/
-  signup: '/auth/inscription/', //  POST   SignupView
-  login: '/auth/connexion/', //     POST   LoginView
-  logout: '/auth/deconnexion/', //  POST   LogoutView
-  me: '/auth/moi/', //              GET    (nouveau : qui est connecté)
+  // ── Comptes ─────────────────────────────────────────────────────────────
+  signup: '/auth/signup/', //   POST  crée le compte et renvoie un jeton
+  login: '/auth/login/', //     POST  échange identifiants contre jeton
+  logout: '/auth/logout/', //   POST  révoque le jeton
+  me: '/auth/me/', //           GET   qui est connecté, d'après le jeton
 
-  // ── Billets ────────────────────────────────  park_management/pages/tickets/
-  billets: '/billets/', //          GET    TicketList
-  assignBillet: '/billets/assigner/', // POST AssignTicket
+  // ── Billets ─────────────────────────────────────────────────────────────
+  tickets: '/tickets/', //      GET   mes billets  ·  POST  en acheter un
+  payTicket: (ticketId) => `/tickets/${ticketId}/pay/`, //  POST  le payer
+  assignTicket: '/tickets/assign/', //                      POST  en rattacher un
 
-  // ── Attractions & files ────────────────────  park_management/pages/attractions/
-  attractions: '/attractions/', //  GET    AttractionList
-  joinQueue: (attractionId) => `/attractions/${attractionId}/file/rejoindre/`, // POST QueueJoin
-  leaveQueue: (entryId) => `/files/${entryId}/quitter/`, //   POST QueueLeave
-  validateQueue: (entryId) => `/files/${entryId}/valider/`, // POST QueueValidate
+  // ── Attractions & files ─────────────────────────────────────────────────
+  attractions: '/attractions/', // GET
+  joinQueue: (attractionId) => `/attractions/${attractionId}/queue/join/`, // POST
+  queuePosition: (entryId) => `/queue/${entryId}/position/`, //               GET
+  leaveQueue: (entryId) => `/queue/${entryId}/leave/`, //                     POST
+  validateQueue: (entryId) => `/queue/${entryId}/validate/`, //               POST
 
-  // ── Console admin ──────────────────────────  park_management/pages/console/
-  console: '/console/', //          GET    ConsoleView
-  acceptEntry: (entryId) => `/console/places/${entryId}/accepter/`, // POST AcceptEntry
-  refuseEntry: (entryId) => `/console/places/${entryId}/refuser/`, //  POST RefuseEntry
+  // ── Console admin ───────────────────────────────────────────────────────
+  console: '/console/', //      GET
+  acceptEntry: (entryId) => `/console/entries/${entryId}/accept/`, // POST
+  refuseEntry: (entryId) => `/console/entries/${entryId}/refuse/`, // POST
 }
