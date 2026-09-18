@@ -69,6 +69,29 @@ print(*sorted(app.openapi()['paths']), sep=chr(10))"   # la liste des routes
 grep -rn 'todo(' app/routers/                          # ce qui reste à écrire
 ```
 
+## Tests
+
+```bash
+uv run pytest            # tout
+uv run pytest -q --runxfail   # ce que les routes non écrites feraient vraiment
+```
+
+Les tests tournent sur un **vrai Postgres** — celui du `docker compose` — mais dans une
+base à part, `<POSTGRES_DB>_test`, créée au premier lancement et vidée puis repeuplée
+avant *chaque* test (`TRUNCATE … RESTART IDENTITY`). Les données de développement ne
+sont jamais touchées, et les identifiants sont déterministes : `tests/seed.py` les nomme
+(`TICKET_FREE`, `ENTRY_GOKU_READY`…) plutôt que de laisser des `1`, `2`, `3` dans les
+assertions.
+
+Trois tests par route : le bon scénario, et deux refus qui comptent. Les routes encore
+en `todo()` ont leur bon scénario marqué `xfail(strict=True)` — la suite est donc verte
+aujourd'hui, et **devient rouge le jour où tu implémentes la route** : le XPASS te dit
+d'enlever le marqueur. C'est la liste de travail, écrite en tests plutôt qu'en TODO.
+
+Deux propriétés de sécurité sont testées explicitement, parce qu'elles se cassent sans
+bruit : `login` répond la même chose pour un mot de passe faux et un compte inconnu, et
+la console refuse un visiteur connecté avec le message exact qu'elle sert à un inconnu.
+
 ## Écarts avec le schéma de départ
 
 Le schéma DBML fourni a été suivi, avec cinq ajustements :
