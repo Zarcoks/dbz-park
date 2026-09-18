@@ -1,0 +1,48 @@
+Table user {
+  id integer [pk]
+  username varchar
+}
+
+Table ticket {
+  id integer [pk]
+  user_id integer [ref: > user.id, null]
+  numero varchar [unique, not null]
+  role billet_role [not null, default: 'normal']
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table attraction {
+  id integer [pk]
+  name varchar [not null]
+  max_people integer [not null]
+  avg_duration interval [not null, default: `'00:02:00'`]
+}
+
+Table queue_entry {
+  id integer [pk]
+  attraction_id integer [ref: > attraction.id, not null]
+  ticket_id integer [ref: > ticket.id, not null]
+  joined_at timestamp [not null, default: `now()`]
+  is_ready boolean [not null, default: false]
+  ready_at timestamp [null]
+  max_seconds_allowing_ready integer [not null, default: 300, note: 'secondes de tolérance avant expiration de l\'état prêt']
+
+  indexes {
+    (attraction_id, ticket_id) [unique, name: 'un_billet_une_place_par_attraction']
+  }
+
+  Note: 'File d\'attente virtuelle : une ligne par billet en attente sur une attraction. Disparaît quand le visiteur entre ou se désiste.'
+}
+
+Table attraction_visit {
+  id integer [pk]
+  attraction_id integer [ref: > attraction.id, not null]
+  billet_id integer [ref: > ticket.id, not null]
+  entered_at timestamp [not null, default: `now()`]
+
+  indexes {
+    (attraction_id, billet_id) [unique, name: 'un_billet_une_presence_par_attraction']
+  }
+
+  Note: 'Présence courante : une ligne par visiteur actuellement dans l\'attraction. Écrite à l\'entrée, effacée à la sortie.'
+}

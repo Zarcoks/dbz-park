@@ -6,3 +6,5 @@ staticfiles/
 .env
 .idea
 .claude
+# Backend
+backend/.venv/
