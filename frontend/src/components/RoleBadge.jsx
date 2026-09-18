@@ -3,11 +3,11 @@
  * `role-badge-<role>` posée dans dbz-park.css : chaque rôle se lit sans son
  * libellé.
  */
-export default function RoleBadge({ billet, withIcon = true }) {
+export default function RoleBadge({ ticket, withIcon = true }) {
   return (
-    <span className={`role-badge role-badge-${billet.role}`}>
+    <span className={`role-badge role-badge-${ticket.role}`}>
       {withIcon && <i className="bi bi-stars" />}
-      {billet.role_display}
+      {ticket.role_display}
     </span>
   )
 }

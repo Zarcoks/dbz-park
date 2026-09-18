@@ -56,11 +56,9 @@ async function request(path, { method = 'GET', body } = {}) {
     throw new ApiError("Le serveur ne répond pas.", 0)
   }
 
-  // 204 : la requête a réussi et n'a rien à renvoyer (une suppression).
-  if (response.status === 204) {
-    return null
-  }
-
+  // Le contrat ne connaît que deux réponses : 200, et 400 avec un `detail`.
+  // Un 200 peut n'avoir aucun corps (rejoindre une file, se déconnecter) : le
+  // `catch` le ramène alors à `null`, ce que les appelants savent lire.
   const data = await response.json().catch(() => null)
 
   if (!response.ok) {
