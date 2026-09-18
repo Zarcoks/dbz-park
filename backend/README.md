@@ -1,0 +1,89 @@
+# Backend — FastAPI
+
+L'API du parc. Le contrat qu'elle doit respecter est à la racine, dans
+[`../API.md`](../API.md) : **deux réponses possibles, `200` et `400`**, et pour
+un `400` un corps `{"detail": "…"}` que le front affiche tel quel.
+
+## Lancer
+
+Copier `../.env.example` en `../.env`, puis, depuis la racine :
+
+```bash
+docker compose up -d        # la base, et rien d'autre pour l'instant
+```
+
+```bash
+cd backend
+uv sync
+uv run alembic upgrade head
+uv run fastapi dev app/main.py
+```
+
+Le `.env` de la racine sert aux deux : `docker compose` y prend les identifiants
+de la base, `app/config.py` y prend les mêmes, plus le secret des jetons.
+
+L'API répond sur `http://localhost:8000/api/…`, la documentation interactive sur
+`http://localhost:8000/api/docs`. Le front (port 5173) renvoie déjà `/api` ici
+via le proxy de Vite : pas de CORS à régler en développement.
+
+## Ce qu'il y a dans quel fichier
+
+```
+app/
+├── config.py      le .env de la racine, lu une fois. Seul endroit qui connaît l'environnement.
+├── db.py          le moteur async et la session par requête (`SessionDep`).
+├── security.py    empreintes bcrypt, et le JWT signé qui sert de jeton.
+├── dependencies.py qui appelle : `CurrentUser` (connecté) et `StaffUser` (console).
+├── errors.py      `ApiError("…")` → 400 + detail. La seule erreur du projet.
+├── main.py        l'app, montée sous /api, et la traduction 422 → 400.
+├── models/        les cinq tables. Rien d'autre ne décrit le schéma.
+├── schemas/       les formes d'entrée et de sortie de `../API.md`.
+└── routers/       un module par domaine, comme `frontend/src/api/`.
+alembic/           les migrations. `env.py` lit l'URL dans `app.config`.
+```
+
+Deux règles qui expliquent le découpage :
+
+- **Un modèle ne sort jamais d'un handler.** Il passe par un schéma, qui décide
+  de ce qui est publié — c'est ce qui évite qu'une colonne ajoutée en base se
+  retrouve dans une réponse.
+- **Une erreur ne se fabrique pas à la main.** `raise ApiError("…")`, jamais un
+  `HTTPException` avec un code choisi sur place : c'est ce qui garantit que le
+  contrat n'a bien que deux codes.
+
+## État d'avancement
+
+Écrit : la configuration, la base, les modèles, la migration initiale, les
+jetons, les dépendances d'authentification, et les trois routes de comptes
+(`signup`, `login`, `me`).
+
+Pas encore écrit : les handlers de billets, attractions, files et console. Ils
+existent tous, avec leur signature et leur schéma de réponse définitifs, et
+appellent `todo()` — qui répond `501`, volontairement hors contrat, pour qu'on
+distingue d'un coup d'œil « refusé » (400) de « pas encore fait ».
+
+```bash
+uv run python -c "
+from app.main import app
+print(*sorted(app.openapi()['paths']), sep=chr(10))"   # la liste des routes
+grep -rn 'todo(' app/routers/                          # ce qui reste à écrire
+```
+
+## Écarts avec le schéma de départ
+
+Le schéma DBML fourni a été suivi, avec cinq ajustements :
+
+| Schéma fourni | Ici | Pourquoi |
+| ------------- | --- | -------- |
+| `billet_role` | `ticket_role` | le reste du projet est passé à l'anglais. |
+| `attraction_visit.billet_id` | `ticket_id` | la table visée s'appelle `ticket`. |
+| index nommés en français | `uq_queue_entry_ticket_per_attraction`, `uq_visit_ticket_per_attraction` | même raison. |
+| `user(id, username)` | `+ email`, `password_hash`, `is_staff` | le contrat demande une inscription avec email, une connexion, et une console réservée au personnel. |
+| — | rien pour le paiement | décidé : tous les billets sont considérés comme payés, il n'y a donc ni colonne ni route d'argent. |
+
+`ticket.numero` garde son nom : c'est celui de la colonne dans le schéma.
+
+L'ordre de déclaration de `ticket_role` est l'ordre de priorité des tarifs
+(`super_sayan`, `sayan`, `normal`), et Postgres trie un enum dans son ordre de
+déclaration : `ORDER BY role` donne donc le meilleur billet en premier, sans
+`CASE WHEN`.
