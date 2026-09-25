@@ -1,4 +1,4 @@
-/** Le catalogue des attractions et les trois gestes sur une file. */
+/** Le catalogue des attractions et les gestes sur une file. */
 import { api } from './client'
 import { endpoints } from './endpoints'
 import { USE_MOCK, mock } from './mock'
@@ -10,6 +10,15 @@ export function listAttractions() {
 
 export function joinQueue(attractionId) {
   return USE_MOCK ? mock.joinQueue(attractionId) : api.post(endpoints.joinQueue(attractionId))
+}
+
+/**
+ * Le rang d'une place, recalculé à la volée. Le front l'interroge seul, sans
+ * recharger toute la liste des attractions : c'est ce qui permet de rafraîchir
+ * l'attente toutes les quelques secondes sans faire travailler le back pour rien.
+ */
+export function queuePosition(entryId) {
+  return USE_MOCK ? mock.queuePosition(entryId) : api.get(endpoints.queuePosition(entryId))
 }
 
 export function leaveQueue(entryId) {
