@@ -21,12 +21,11 @@ export async function signup(form) {
   return data.user
 }
 
+/**
+ * Se déconnecter, c'est oublier le jeton : le back n'a pas de route pour ça,
+ * donc aucun appel réseau — et rien qui puisse échouer avant d'oublier.
+ */
 export async function logout() {
-  if (USE_MOCK) {
-    await mock.logout()
-  } else {
-    await api.post(endpoints.logout)
-  }
   setToken(null)
 }
 
