@@ -42,7 +42,7 @@ src/
 ├── hooks/        useApi : charger des données avec ses états (chargement, erreur).
 ├── pages/        un fichier par écran. C'est là qu'on lit ce que fait la page.
 ├── styles/       dbz-park.css, la copie du style du parc.
-└── utils/        la mise en forme des dates.
+└── utils/        la mise en forme des dates et des durées, les libellés des rôles.
 ```
 
 La règle : **une page ne fait jamais d'appel réseau elle-même**. Elle demande à
