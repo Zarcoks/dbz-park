@@ -10,7 +10,7 @@ export function formatTime(iso) {
   return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 }
 
-/** « 17/09/2026 à 14:05 » — la date d'assignation d'un billet. */
+/** « 17/09/2026 à 14:05 » — la date d'achat d'un billet. */
 export function formatDateTime(iso) {
   if (!iso) return ''
   const date = new Date(iso)
@@ -26,4 +26,15 @@ export function timeSince(iso) {
   if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''}`
   const hours = Math.floor(minutes / 60)
   return `${hours} heure${hours > 1 ? 's' : ''}`
+}
+
+/** « 2 min » — la durée d'un tour, que le back envoie en secondes. */
+export function formatDuration(seconds) {
+  if (seconds == null) return ''
+  if (seconds < 60) return `${seconds} s`
+  const minutes = Math.round(seconds / 60)
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return rest ? `${hours} h ${rest} min` : `${hours} h`
 }
