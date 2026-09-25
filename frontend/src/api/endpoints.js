@@ -11,12 +11,11 @@ export const endpoints = {
   // ── Comptes ─────────────────────────────────────────────────────────────
   signup: '/auth/signup/', //   POST  crée le compte et renvoie un jeton
   login: '/auth/login/', //     POST  échange identifiants contre jeton
-  logout: '/auth/logout/', //   POST  révoque le jeton
   me: '/auth/me/', //           GET   qui est connecté, d'après le jeton
 
   // ── Billets ─────────────────────────────────────────────────────────────
-  tickets: '/tickets/', //      GET   mes billets  ·  POST  en acheter un
-  payTicket: (ticketId) => `/tickets/${ticketId}/pay/`, //  POST  le payer
+  tickets: '/tickets/', //      GET   tous les billets (staff)  ·  POST  en acheter un
+  userTickets: (userId) => `/user/${userId}/tickets/`, //   GET   les billets d'un visiteur
   assignTicket: '/tickets/assign/', //                      POST  en rattacher un
 
   // ── Attractions & files ─────────────────────────────────────────────────
