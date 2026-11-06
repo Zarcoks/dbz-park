@@ -1,0 +1,14 @@
+# Défi 2 - Service ClusterIP : IP virtuelle interne stable devant les 3 Pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: csc8567-defi2
+  namespace: n-grp1
+spec:
+  type: ClusterIP                  # joignable seulement depuis le cluster
+  selector:
+    app: csc8567-defi2             # trafic réparti sur les Pods avec ce label
+  ports:
+    - port: 80                     # port du Service
+      targetPort: http             # -> containerPort 5000 des Pods
+      # port sans nom : URL proxy .../services/csc8567-defi2/proxy/ sans suffixe

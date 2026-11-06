@@ -1,0 +1,30 @@
+# Celery beat + worker: calls the next visitors every few seconds.
+# Beat must run exactly once, hence 1 replica and the Recreate strategy
+# (the old Pod stops before the new one starts: never two schedulers).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbz-worker
+  labels: { app: dbz-worker, app.kubernetes.io/part-of: dbz-park }
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: { app: dbz-worker }
+  template:
+    metadata:
+      labels: { app: dbz-worker, app.kubernetes.io/part-of: dbz-park }
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/zarcoks/dbz-park-backend:latest
+          imagePullPolicy: Always
+          command: [celery, -A, app.worker, worker, --beat, --concurrency=1,
+                    --loglevel=info, --schedule=/tmp/celerybeat-schedule]
+          envFrom:
+            - configMapRef: { name: dbz-config }
+            - secretRef: { name: dbz-secrets }
+          resources:
+            requests: { cpu: 100m, memory: 100Mi }
+            limits: { cpu: 200m, memory: 200Mi }

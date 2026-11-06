@@ -1,0 +1,53 @@
+# The API (FastAPI): stateless, so 3 interchangeable replicas behind a ClusterIP Service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbz-backend
+  labels: { app: dbz-backend, app.kubernetes.io/part-of: dbz-park }
+spec:
+  selector: { app: dbz-backend }
+  ports:
+    - port: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbz-backend
+  labels: { app: dbz-backend, app.kubernetes.io/part-of: dbz-park }
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: dbz-backend }
+  template:
+    metadata:
+      labels: { app: dbz-backend, app.kubernetes.io/part-of: dbz-park }
+    spec:
+      # Same role as depends_on/service_healthy in compose: the headless name dbz-db
+      # only resolves once the database Pod is ready, so wait for it before starting.
+      initContainers:
+        - name: wait-db
+          image: postgres:17-alpine
+          command: [sh, -c, "until pg_isready -h dbz-db -p 5432; do sleep 2; done"]
+          resources:
+            requests: { cpu: 50m, memory: 32Mi }
+            limits: { cpu: 100m, memory: 64Mi }
+      containers:
+        - name: api
+          image: ghcr.io/zarcoks/dbz-park-backend:latest
+          imagePullPolicy: Always
+          # The image's command: migrate (under a Postgres lock), then serve on 8000.
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef: { name: dbz-config }
+            - secretRef: { name: dbz-secrets }
+          readinessProbe:
+            httpGet: { path: /api/health/, port: 8000 }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /api/health/, port: 8000 }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 100Mi }
+            limits: { cpu: 200m, memory: 200Mi }

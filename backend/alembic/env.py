@@ -8,6 +8,7 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
+from sqlalchemy import text
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -21,6 +22,10 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+# Several API replicas start together and each runs `alembic upgrade head`:
+# only one migrates, the others wait, then find the schema up to date.
+MIGRATION_LOCK = 20261106
+
 
 def run_migrations_offline() -> None:
     """`alembic upgrade --sql`: emits the SQL without connecting."""
@@ -32,6 +37,7 @@ def run_migrations_offline() -> None:
         compare_type=True,
     )
     with context.begin_transaction():
+        connection.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": MIGRATION_LOCK})
         context.run_migrations()
 
 

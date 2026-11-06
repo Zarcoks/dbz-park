@@ -1,0 +1,31 @@
+# Défi 2 - Deployment : 3 répliques du site CSC8567, avec ressources encadrées
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csc8567-defi2
+  namespace: n-grp1
+  labels:
+    app: csc8567-defi2
+spec:
+  replicas: 3                      # 3 Pods identiques
+  selector:
+    matchLabels:
+      app: csc8567-defi2           # le Deployment gère les Pods portant ce label
+  template:
+    metadata:
+      labels:
+        app: csc8567-defi2         # label repris par le selector du Service
+    spec:
+      containers:
+        - name: web
+          image: xhelozs/csc8567:v1
+          ports:
+            - name: http
+              containerPort: 5000  # Flask écoute sur 5000
+          resources:
+            requests:              # réservé par le scheduler
+              cpu: 100m            # 1/10 CPU
+              memory: 100Mi        # ~100 Mo
+            limits:                # plafond
+              cpu: 200m            # 1/5 CPU (au-delà : throttling)
+              memory: 200Mi        # ~200 Mo (au-delà : OOMKilled)

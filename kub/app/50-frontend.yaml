@@ -1,0 +1,60 @@
+# The front: the React build served by nginx, 3 replicas.
+# On Kubernetes the Ingress sends /api to the API itself, so nginx only serves files:
+# this ConfigMap replaces the image's nginx.conf (which proxies /api to `backend`).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dbz-frontend-nginx
+  labels: { app.kubernetes.io/part-of: dbz-park }
+data:
+  default.conf: |
+    server {
+        listen 80;
+        root /usr/share/nginx/html;
+        # React Router owns the paths: /connexion, /console... all serve the same page.
+        location / {
+            try_files $uri /index.html;
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbz-frontend
+  labels: { app: dbz-frontend, app.kubernetes.io/part-of: dbz-park }
+spec:
+  selector: { app: dbz-frontend }
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbz-frontend
+  labels: { app: dbz-frontend, app.kubernetes.io/part-of: dbz-park }
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: dbz-frontend }
+  template:
+    metadata:
+      labels: { app: dbz-frontend, app.kubernetes.io/part-of: dbz-park }
+    spec:
+      containers:
+        - name: nginx
+          image: ghcr.io/zarcoks/dbz-park-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 100m, memory: 100Mi }
+            limits: { cpu: 200m, memory: 200Mi }
+      volumes:
+        - name: nginx-conf
+          configMap: { name: dbz-frontend-nginx }

@@ -1,0 +1,20 @@
+# Entry point from the Internet (ingress-nginx of the cluster, 157.159.11.201).
+# Replaces the nginx proxy of docker-compose: /api -> API, everything else -> front.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dbz-park
+  labels: { app.kubernetes.io/part-of: dbz-park }
+spec:
+  rules:
+    - host: dbz.grp1.net4255.luxbulb.org
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service: { name: dbz-backend, port: { number: 8000 } }
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: dbz-frontend, port: { number: 80 } }

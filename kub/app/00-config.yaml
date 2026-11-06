@@ -1,0 +1,19 @@
+# Settings shared by the API and the worker: the same role as the
+# `x-backend-environment` block of docker-compose.yml.
+# The secrets (passwords, JWT key) are NOT here: they live in the Secret `dbz-secrets`,
+# created by hand (see README.md), never committed.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dbz-config
+  labels: { app.kubernetes.io/part-of: dbz-park }
+data:
+  POSTGRES_HOST: dbz-db            # the headless Service of the database
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: dbz_park
+  POSTGRES_USER: dbz_park
+  REDIS_URL: redis://dbz-redis:6379/0
+  TZ: Europe/Paris                 # dates are stored as the park's local time
+  CORS_ORIGINS: https://dbz.grp1.net4255.luxbulb.org
+  CALLING_INTERVAL_SECONDS: "5"
+  QUEUE_CLOSING_HOUR: "19"

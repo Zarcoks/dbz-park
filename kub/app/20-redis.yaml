@@ -1,0 +1,35 @@
+# Redis: the worker's Celery broker. Nothing durable in it, so a plain Deployment.
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbz-redis
+  labels: { app: dbz-redis, app.kubernetes.io/part-of: dbz-park }
+spec:
+  selector: { app: dbz-redis }
+  ports:
+    - port: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbz-redis
+  labels: { app: dbz-redis, app.kubernetes.io/part-of: dbz-park }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: dbz-redis }
+  template:
+    metadata:
+      labels: { app: dbz-redis, app.kubernetes.io/part-of: dbz-park }
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec: { command: [redis-cli, ping] }
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 100m, memory: 100Mi }
+            limits: { cpu: 200m, memory: 200Mi }
